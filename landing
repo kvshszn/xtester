@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KANTOKU — The Director’s AI Storyboarding Suite</title>
+  <style>
+    body { margin:0; font-family:'Cinzel', serif; background:#f5f0e8; color:#2c2416; overflow:hidden; }
+    .hero { height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; background: linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.45)), url('https://your-hoshi-image.jpg'); background-size:cover; background-position:center; }
+    .logo { font-size:110px; letter-spacing:12px; color:#2c2416; margin-bottom:20px; }
+    .tagline { font-size:28px; font-style:italic; margin-bottom:40px; }
+    .btn { padding:18px 48px; font-size:15px; letter-spacing:2px; background:#b8892a; color:#fff; border:none; cursor:pointer; transition:0.2s; }
+    .btn:hover { background:#d4a843; transform:translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div>
+      <div class="logo">KANTOKU</div>
+      <div class="tagline">The director’s AI storyboarding suite</div>
+      <button class="btn" onclick="window.location.href='https://your-app.vercel.app'">Launch KANTOKU →</button>
+      <p style="margin-top:60px;font-size:14px;opacity:0.8;">Built while directing HOSHI — now for every kantoku</p>
+    </div>
+  </div>
+</body>
+</html>
