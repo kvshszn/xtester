@@ -3,24 +3,559 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KANTOKU — The Director’s AI Storyboarding Suite</title>
+  <title>SZN — The Studio Is Dead</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { margin:0; font-family:'Cinzel', serif; background:#f5f0e8; color:#2c2416; overflow:hidden; }
-    .hero { height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; background: linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.45)), url('https://your-hoshi-image.jpg'); background-size:cover; background-position:center; }
-    .logo { font-size:110px; letter-spacing:12px; color:#2c2416; margin-bottom:20px; }
-    .tagline { font-size:28px; font-style:italic; margin-bottom:40px; }
-    .btn { padding:18px 48px; font-size:15px; letter-spacing:2px; background:#b8892a; color:#fff; border:none; cursor:pointer; transition:0.2s; }
-    .btn:hover { background:#d4a843; transform:translateY(-2px); }
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --red:   #e53e3e;
+      --yellow:#f6e05e;
+      --grey:  #111111;
+      --mid:   #222222;
+      --dim:   #888888;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      z-index: 100;
+      border-bottom: 1px solid #1a1a1a;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-logo {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 28px;
+      color: var(--white);
+      letter-spacing: 2px;
+    }
+
+    .nav-logo span { color: var(--red); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 32px;
+    }
+
+    nav ul li a {
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    nav ul li a:hover { color: var(--white); }
+
+    /* ── TICKER ── */
+    .ticker {
+      background: var(--red);
+      color: var(--black);
+      padding: 10px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      margin-top: 65px;
+    }
+
+    .ticker-inner {
+      display: inline-block;
+      animation: ticker 20s linear infinite;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 40px 80px;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-family: 'Permanent Marker', cursive;
+      font-size: clamp(64px, 12vw, 160px);
+      line-height: 0.9;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .hero-title .line-1 { color: var(--white); }
+    .hero-title .line-2 { color: var(--yellow); display: block; }
+    .hero-title .line-3 { color: var(--red); display: block; font-size: 0.55em; }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--dim);
+      max-width: 520px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── DRIP ── */
+    .drip-bar {
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+      margin: -1px 0;
+    }
+
+    .drip-bar svg { display: block; width: 100%; }
+
+    /* ── EMAIL FORM ── */
+    .form-row {
+      display: flex;
+      gap: 0;
+      max-width: 460px;
+      width: 100%;
+    }
+
+    .form-row input {
+      flex: 1;
+      background: var(--grey);
+      border: 1px solid #333;
+      border-right: none;
+      color: var(--white);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      padding: 14px 20px;
+      outline: none;
+      letter-spacing: 1px;
+    }
+
+    .form-row input::placeholder { color: #444; }
+
+    .form-row input:focus { border-color: var(--red); }
+
+    .form-row button {
+      background: var(--red);
+      color: var(--black);
+      border: none;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 14px 24px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .form-row button:hover { background: #ff6b6b; transform: translateY(-1px); }
+    .form-row button:active { transform: translateY(0); }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 100px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Permanent Marker', cursive;
+      font-size: clamp(36px, 5vw, 72px);
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+
+    .section-body {
+      font-size: 13px;
+      color: var(--dim);
+      line-height: 1.9;
+      max-width: 640px;
+    }
+
+    /* ── GRID ── */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: #1a1a1a;
+      margin-top: 60px;
+    }
+
+    .grid-card {
+      background: var(--black);
+      padding: 40px 32px;
+      transition: background 0.2s;
+    }
+
+    .grid-card:hover { background: #0a0a0a; }
+
+    .grid-card-num {
+      font-size: 48px;
+      font-family: 'Permanent Marker', cursive;
+      color: var(--yellow);
+      margin-bottom: 16px;
+      line-height: 1;
+    }
+
+    .grid-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .grid-card-body {
+      font-size: 12px;
+      color: var(--dim);
+      line-height: 1.8;
+    }
+
+    /* ── TERMINAL ── */
+    .terminal {
+      background: var(--grey);
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 60px;
+      max-width: 800px;
+    }
+
+    .terminal-bar {
+      background: #1a1a1a;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot:nth-child(1) { background: var(--red); }
+    .terminal-dot:nth-child(2) { background: var(--yellow); }
+    .terminal-dot:nth-child(3) { background: #2ecc71; }
+
+    .terminal-title {
+      font-size: 11px;
+      color: var(--dim);
+      margin-left: 8px;
+      letter-spacing: 1px;
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-size: 13px;
+      line-height: 2;
+    }
+
+    .term-line { display: block; }
+    .term-prompt { color: var(--red); }
+    .term-cmd { color: var(--white); }
+    .term-out { color: var(--dim); }
+    .term-highlight { color: var(--yellow); }
+    .term-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--white);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      margin: 0;
+    }
+
+    /* ── MANIFESTO ── */
+    .manifesto {
+      background: var(--red);
+      color: var(--black);
+      padding: 80px 40px;
+      text-align: center;
+    }
+
+    .manifesto h2 {
+      font-family: 'Permanent Marker', cursive;
+      font-size: clamp(36px, 6vw, 80px);
+      line-height: 1.1;
+      max-width: 900px;
+      margin: 0 auto 24px;
+    }
+
+    .manifesto p {
+      font-size: 13px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.9;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 48px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #1a1a1a;
+      font-size: 11px;
+      color: #333;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    footer .footer-logo {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 20px;
+      color: var(--white);
+    }
+
+    footer .footer-logo span { color: var(--red); }
+
+    @media (max-width: 768px) {
+      nav ul { display: none; }
+      .grid-3 { grid-template-columns: 1fr; }
+      nav { padding: 16px 20px; }
+      section { padding: 60px 20px; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">SZ<span>N</span></div>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#manifesto">Manifesto</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <span class="ticker-inner">
+      THE STUDIO IS DEAD &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; LONG LIVE SZN &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; LONG LIVE SZN &nbsp;✦&nbsp;
+      THE STUDIO IS DEAD &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; LONG LIVE SZN &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; THE STUDIO IS DEAD &nbsp;✦&nbsp; LONG LIVE SZN &nbsp;✦&nbsp;
+    </span>
+  </div>
+
+  <!-- HERO -->
   <div class="hero">
-    <div>
-      <div class="logo">KANTOKU</div>
-      <div class="tagline">The director’s AI storyboarding suite</div>
-      <button class="btn" onclick="window.location.href='https://your-app.vercel.app'">Launch KANTOKU →</button>
-      <p style="margin-top:60px;font-size:14px;opacity:0.8;">Built while directing HOSHI — now for every kantoku</p>
+    <p class="hero-eyebrow">Est. 2024 &nbsp;·&nbsp; Independent &nbsp;·&nbsp; Uncompromised</p>
+    <h1 class="hero-title">
+      <span class="line-1">SZN</span>
+      <span class="line-2">The Studio</span>
+      <span class="line-3">Is Dead.</span>
+    </h1>
+    <p class="hero-sub">
+      We are not a studio. We are what comes after.<br>
+      Film. Music. Code. Brand. Built without permission,<br>
+      released without apology.
+    </p>
+    <div class="form-row">
+      <input type="email" placeholder="your@email.com" />
+      <button type="button">Get Access →</button>
     </div>
   </div>
+
+  <!-- DRIP SVG -->
+  <div class="drip-bar">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 60" preserveAspectRatio="none" height="60">
+      <path fill="#e53e3e" d="M0,0 L1440,0 L1440,20
+        Q1380,60 1320,20 Q1260,60 1200,20 Q1140,60 1080,20
+        Q1020,60  960,20 Q900,60  840,20 Q780,60  720,20
+        Q660,60   600,20 Q540,60  480,20 Q420,60  360,20
+        Q300,60   240,20 Q180,60  120,20 Q60,60    0,20 Z"/>
+    </svg>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="section-label">// about</p>
+    <h2 class="section-title">Built Different.<br>On Purpose.</h2>
+    <p class="section-body">
+      SZN is a collective of directors, engineers, and writers who got tired of waiting.
+      No gatekeepers. No development hell. No notes from people who haven't made anything.
+      We build the work we want to see, then we ship it.
+    </p>
+
+    <div class="grid-3">
+      <div class="grid-card">
+        <div class="grid-card-num">01</div>
+        <div class="grid-card-title">Film & Story</div>
+        <div class="grid-card-body">Short films, features, and visual essays made at the pace of obsession, not bureaucracy.</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-card-num">02</div>
+        <div class="grid-card-title">Sound & Music</div>
+        <div class="grid-card-body">Original scores, soundtracks, and records. Made in-house, owned outright.</div>
+      </div>
+      <div class="grid-card">
+        <div class="grid-card-num">03</div>
+        <div class="grid-card-title">Tech & Tools</div>
+        <div class="grid-card-body">Software and AI systems that power our work — and eventually yours.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- WORK / TERMINAL -->
+  <section id="work">
+    <p class="section-label">// system log</p>
+    <h2 class="section-title">What We're<br>Building</h2>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <span class="terminal-title">szn — build log</span>
+      </div>
+      <div class="terminal-body">
+        <span class="term-line"><span class="term-prompt">$ </span><span class="term-cmd">szn status</span></span>
+        <span class="term-line term-out">─────────────────────────────────────</span>
+        <span class="term-line"><span class="term-highlight">KANTOKU</span> <span class="term-out">/ AI storyboarding suite</span></span>
+        <span class="term-line term-out">  → status: <span style="color:#2ecc71">shipping</span></span>
+        <span class="term-line term-out">  → stack: React, Claude API, WebGL</span>
+        <span class="term-line">&nbsp;</span>
+        <span class="term-line"><span class="term-highlight">HOSHI</span> <span class="term-out">/ feature film in production</span></span>
+        <span class="term-line term-out">  → status: <span style="color:var(--yellow)">pre-production</span></span>
+        <span class="term-line term-out">  → format: 2.39:1 anamorphic</span>
+        <span class="term-line">&nbsp;</span>
+        <span class="term-line"><span class="term-highlight">SZN OS</span> <span class="term-out">/ creative infrastructure</span></span>
+        <span class="term-line term-out">  → status: <span style="color:var(--red)">classified</span></span>
+        <span class="term-line term-out">─────────────────────────────────────</span>
+        <span class="term-line"><span class="term-prompt">$ </span><span class="term-cursor"></span></span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- MANIFESTO -->
+  <div class="manifesto" id="manifesto">
+    <h2>"The studio system didn't die.<br>We killed it."</h2>
+    <p>
+      Every creative constraint, every note that kills a project, every deal that never closes —
+      we treat them as fuel. SZN exists in the gap between what the industry allows and what the work demands.
+      We live there. We build there.
+    </p>
+  </div>
+
+  <!-- CONTACT / EMAIL -->
+  <section id="contact" style="text-align:center; max-width:600px;">
+    <p class="section-label">// access</p>
+    <h2 class="section-title" style="font-size:clamp(28px,4vw,52px)">Get on the list.</h2>
+    <p class="section-body" style="margin: 0 auto 40px; text-align:center;">
+      Early access to tools, previews of upcoming work, and dispatches from inside the machine.
+    </p>
+    <div class="form-row" style="margin:0 auto">
+      <input type="email" placeholder="your@email.com" />
+      <button type="button">Join →</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">SZ<span>N</span></div>
+    <span>© 2024 SZN — All rights reserved</span>
+    <span>The Studio Is Dead</span>
+  </footer>
+
+  <script>
+    // Ticker duplicate content is already in HTML for seamless loop.
+    // Form submit handler
+    document.querySelectorAll('.form-row button').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const input = this.previousElementSibling;
+        const email = input.value.trim();
+        if (!email || !email.includes('@')) {
+          input.style.borderColor = '#e53e3e';
+          input.focus();
+          return;
+        }
+        this.textContent = 'Added ✓';
+        this.style.background = '#2ecc71';
+        input.value = '';
+        input.style.borderColor = '';
+        setTimeout(() => {
+          this.textContent = this.textContent.includes('Join') ? 'Join →' : 'Get Access →';
+          this.style.background = '';
+        }, 3000);
+      });
+    });
+  </script>
 </body>
 </html>
